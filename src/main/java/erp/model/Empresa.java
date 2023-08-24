@@ -1,6 +1,7 @@
 package erp.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
@@ -20,8 +21,9 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "empresa")
 public class Empresa implements Serializable {
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -32,14 +34,13 @@ public class Empresa implements Serializable {
 	@Column(name = "razao_social", nullable = false, length = 120)
 	private String razaoSocial;
 	
-	
 	@Column(nullable = false, length = 18)
 	private String cnpj;
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name = "data_fundacao")
 	private Date dataFundacao;
-
+	
 	@ManyToOne
 	@JoinColumn(name = "ramo_atividade_id", nullable = false)
 	private RamoAtividade ramoAtividade;
@@ -47,6 +48,17 @@ public class Empresa implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 30)
 	private TipoEmpresa tipo;
+	
+	@Column(precision = 10, scale = 2)
+	private BigDecimal faturamento;
+	
+	public BigDecimal getFaturamento() {
+        return faturamento;
+    }
+	
+	public void setFaturamento(BigDecimal faturamento) {
+        this.faturamento = faturamento;
+    }
 
 	public Long getId() {
 		return id;
@@ -95,7 +107,6 @@ public class Empresa implements Serializable {
 	public void setRamoAtividade(RamoAtividade ramoAtividade) {
 		this.ramoAtividade = ramoAtividade;
 	}
-	
 
 	public TipoEmpresa getTipo() {
 		return tipo;
@@ -107,7 +118,10 @@ public class Empresa implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
 	}
 
 	@Override
@@ -119,14 +133,19 @@ public class Empresa implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Empresa other = (Empresa) obj;
-		return Objects.equals(id, other.id);
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 
 	@Override
 	public String toString() {
 		return "Empresa [id=" + id + "]";
-	}
-	
+	}	
+
 	
 	
 }
