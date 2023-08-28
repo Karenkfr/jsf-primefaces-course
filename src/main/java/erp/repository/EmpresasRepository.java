@@ -5,46 +5,51 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import erp.model.Empresa;
 
+
+
 public class EmpresasRepository implements Serializable {
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Inject
 	private EntityManager entityManager;
-	
-	public EmpresasRepository () {
+
+	public EmpresasRepository() {
+
+	}
+
+	public EmpresasRepository(EntityManager manager) {
+		this.entityManager = manager;
+	}
+
+	public EmpresasRepository porId(Long id) {
+		return entityManager.find(EmpresasRepository.class, id);
+	}
+
+	public List<Empresa> pesquisar(String nome) {
+		String jpql = "from Empresa where nomeFantasia like :nomeFantasia";
 		
-	}
-	
-	public EmpresasRepository(EntityManager entityManager) {
-		this.entityManager = entityManager;
-	}
-	
-	
-	
-	public Empresa porId(Long id) {
-		return entityManager.find(Empresa.class, id);
-	}
-	
-	public List<Empresa> pesquisar(String nome){
 		TypedQuery<Empresa> query = entityManager
-				.createQuery("from Empresa where nomeFantasia like :nomeFantasia", Empresa.class);
+				.createQuery(jpql, Empresa.class);
+		
 		query.setParameter("nomeFantasia", nome + "%");
 		
 		return query.getResultList();
 	}
 	
+	public List<Empresa> todas() {
+         return entityManager.createQuery("from Empresa", Empresa.class).getResultList();
+    }
+
 	public Empresa guardar(Empresa empresa) {
 		return entityManager.merge(empresa);
 	}
-	
-	public void remover(Empresa empresa) {
-		empresa = porId(empresa.getId()); 
-		entityManager.remove(empresa);
-	}
 
+	public void remover(Empresa empresa) {
+		
+	}
 }
