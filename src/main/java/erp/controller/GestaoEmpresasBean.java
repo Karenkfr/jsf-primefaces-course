@@ -10,6 +10,7 @@ import javax.inject.Named;
 
 import erp.model.Empresa;
 import erp.repository.EmpresasRepository;
+import erp.util.FacesMensages;
 
 
 @Named
@@ -23,6 +24,20 @@ public class GestaoEmpresasBean implements Serializable {
     
     private List<Empresa> listaEmpresas;
     
+    private String termoPesquisa;
+    
+    @Inject
+    private FacesMensages facesMensages;
+    
+    public void pesquisar() {
+    	listaEmpresas = empresas.pesquisar(termoPesquisa);
+    	
+    	if(listaEmpresas.isEmpty()) {
+    		facesMensages.info("Sua consulta não retornou registros.");
+    		
+    	}
+    }
+    
     public void todasEmpresas() {
         //listaEmpresas = empresas.todas();
     }
@@ -30,4 +45,11 @@ public class GestaoEmpresasBean implements Serializable {
     public List<Empresa> getListaEmpresas() {
         return listaEmpresas;
     }
+    
+    public String getTermoPesquisa() {
+		return termoPesquisa;
+	}
+    public void setTermoPesquisa(String termoPesquisa) {
+		this.termoPesquisa = termoPesquisa;
+	}
 }
