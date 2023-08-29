@@ -13,6 +13,7 @@ import erp.model.RamoAtividade;
 import erp.model.TipoEmpresa;
 import erp.repository.EmpresasRepository;
 import erp.repository.RamoAtividadesRepository;
+import erp.service.CadastroEmpresaService;
 import erp.util.FacesMensages;
 
 @Named
@@ -22,10 +23,16 @@ public class GestaoEmpresasBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	private EmpresasRepository empresas;
+	private EmpresasRepository empresasRepository;
+
+	@Inject
+	private FacesMensages facesMensages;
 
 	@Inject
 	private RamoAtividadesRepository ramoAtividadesRepository;
+
+	@Inject
+	private CadastroEmpresaService cadastroEmpresaService;
 
 	private List<Empresa> listaEmpresas;
 
@@ -33,20 +40,32 @@ public class GestaoEmpresasBean implements Serializable {
 
 	private Converter ramoAtividadeConverter;
 
-	@Inject
-	private FacesMensages facesMensages;
+	private Empresa empresa;
+
+	public void prepararNovaEmpresa() {
+		empresa = new Empresa();
+	}
+
+	public void salvar() {
+		cadastroEmpresaService.salvar(empresa);
+
+		if (jaHouvePesquisa()) {
+			pesquisar();
+		}
+
+		facesMensages.info("Empresa cadastrada com sucesso!");
+	}
 
 	public void pesquisar() {
-		listaEmpresas = empresas.pesquisar(termoPesquisa);
+		listaEmpresas = empresasRepository.pesquisar(termoPesquisa);
 
 		if (listaEmpresas.isEmpty()) {
 			facesMensages.info("Sua consulta não retornou registros.");
-
 		}
 	}
 
 	public void todasEmpresas() {
-		// listaEmpresas = empresas.todas();
+		//listaEmpresas = empresasRepository.todas();
 	}
 
 	public List<RamoAtividade> completarRamoAtividade(String termo) {
@@ -55,6 +74,10 @@ public class GestaoEmpresasBean implements Serializable {
 		ramoAtividadeConverter = new RamoAtividadeConverter(listaRamoAtividades);
 
 		return listaRamoAtividades;
+	}
+
+	private boolean jaHouvePesquisa() {
+		return termoPesquisa != null && !"".equals(termoPesquisa);
 	}
 
 	public List<Empresa> getListaEmpresas() {
@@ -72,8 +95,13 @@ public class GestaoEmpresasBean implements Serializable {
 	public TipoEmpresa[] getTiposEmpresa() {
 		return TipoEmpresa.values();
 	}
-	
+
 	public Converter getRamoAtividadeConverter() {
 		return ramoAtividadeConverter;
 	}
+
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+
 }
